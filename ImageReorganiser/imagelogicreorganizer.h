@@ -7,13 +7,13 @@
 class ImageLogicReorganizer
 {
 private:
-    QDir Directory;
-    QList<QFileInfo> ImageListPath;
+  QDir Directory;
+  QList<QFileInfo> ImageListPath;
 
-    void FindAllFile();
+  void FindAllFile();
 public:
-    ImageLogicReorganizer(QString Directory);
-    void MoveToBackup();
+  ImageLogicReorganizer(QString Directory);
+  void Reorganise();
 };
 
 #endif // IMAGELOGICREORGANIZER_H

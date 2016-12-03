@@ -2,42 +2,40 @@
 
 void ImageLogicReorganizer::FindAllFile()
 {
-    QList<QByteArray> FormatListByte = QImageReader::supportedImageFormats();
+  QList<QByteArray> FormatListByte = QImageReader::supportedImageFormats();
 
-    QStringList FormatStringList;
-    foreach (QByteArray FormatByte, FormatListByte) {
-        FormatStringList.append("*."+FormatByte);
-    }
-    Directory.setNameFilters(FormatStringList);
-    QDirIterator it(Directory, QDirIterator::Subdirectories);
-    while (it.hasNext())
-    {
-        it.next();
-        ImageListPath.append(it.filePath());
-    }
+  QStringList FormatStringList;
+  foreach (QByteArray FormatByte, FormatListByte)
+  {
+    FormatStringList.append("*."+FormatByte);
+  }
+  Directory.setNameFilters(FormatStringList);
+  QDirIterator it(Directory, QDirIterator::Subdirectories);
+  while (it.hasNext())
+  {
+    it.next();
+    ImageListPath.append(it.filePath());
+  }
 }
 
 ImageLogicReorganizer::ImageLogicReorganizer(QString Directory)
 {
-    this->Directory.setPath(Directory);
-    this->Directory.setFilter(QDir::Files);
-    FindAllFile();
+  this->Directory.setPath(Directory);
+  this->Directory.setFilter(QDir::Files);
+  FindAllFile();
 }
 
-void ImageLogicReorganizer::MoveToBackup()
+void ImageLogicReorganizer::Reorganise()
 {
-    if (!QDir(Directory.path()+"/Backup").exists())
-    {
-        QDir(Directory.path()+"/Backup").mkdir(".");
-    }
-    Directory.cd(Directory.path()+"/Backup");
-    unsigned int count = 0;
-    foreach (QFileInfo ImagePath, ImageListPath)
-    {
-        ++count;
-        qDebug() << ImagePath.absoluteFilePath();
-        qDebug() << Directory.absolutePath()+"/Image_"+QString::number(count)+"."+ImagePath.suffix();
-        QFile::rename(ImagePath.absoluteFilePath(),Directory.absolutePath()+"/Image_"+QString::number(count)+"."+ImagePath.suffix());
-    }
+  foreach (QFileInfo fileInfo, ImageListPath)
+  {
+    QImage image = QImage(fileInfo.absoluteFilePath());
+
+    QFileInfo Destination = QFileInfo(Directory.absolutePath()
+                            +"/"+QString::number(image.width()) + "x" + QString::number(image.height())
+                            +"/"+fileInfo.fileName());
+    Directory.mkdir(Destination.absolutePath());
+    QFile::rename(fileInfo.filePath(),Destination.absoluteFilePath());
+  }
 }
 
