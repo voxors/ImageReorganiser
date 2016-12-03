@@ -8,7 +8,7 @@ class ImageLogicReorganizer
 {
 private:
     QDir Directory;
-    QList<QString> ImageListPath;
+    QList<QFileInfo> ImageListPath;
 
     void FindAllFile();
 public:
