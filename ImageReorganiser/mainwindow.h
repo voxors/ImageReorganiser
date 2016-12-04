@@ -23,9 +23,12 @@ private slots:
   void on_executeFinished();
 
 private:
+  const QString ParamsFilePath = QString("./Params.txt");
   Ui::MainWindow *ui;
   QPointer<ImageLogicReorganizerThread> imageLogicThread;
   void closeEvent(QCloseEvent * event);
+  void SaveParams();
+  void LoadParams();
 };
 
 #endif // MAINWINDOW_H

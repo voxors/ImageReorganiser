@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   ui->setupUi(this);
   imageLogicThread = nullptr;
+  LoadParams();
 }
 
 MainWindow::~MainWindow()
@@ -69,6 +70,43 @@ void MainWindow::closeEvent(QCloseEvent* event)
       if (result == QMessageBox::Cancel)
       {
         event->ignore();
+      }
+    }
+  }
+  SaveParams();
+}
+
+void MainWindow::SaveParams()
+{
+  QFile ParamsFile(ParamsFilePath);
+
+  if (ParamsFile.open(QFile::WriteOnly|QFile::Truncate))
+  {
+    QTextStream out(&ParamsFile);
+    out << "Directory=" << ui->lineEditDirectory->text() << endl;
+  }
+}
+
+void MainWindow::LoadParams()
+{
+  QFile ParamsFile(ParamsFilePath);
+
+  if (ParamsFile.open(QFile::ReadOnly))
+  {
+    QTextStream in(&ParamsFile);
+    while (!in.atEnd())
+    {
+      QString line = in.readLine();
+      int splitPosition = line.indexOf("=");
+      QString Variable = line.left(splitPosition);
+      QString Value = line.right(line.length() - splitPosition - 1);
+      if (Variable == "Directory")
+      {
+        ui->lineEditDirectory->setText(Value);
+      }
+      else
+      {
+        qWarning() << Variable + " is not a defined save parameters";
       }
     }
   }
