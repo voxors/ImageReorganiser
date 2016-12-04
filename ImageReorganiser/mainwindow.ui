@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>528</width>
-    <height>80</height>
+    <height>141</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,6 +38,22 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="progressBarMain">
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="textVisible">
+       <bool>false</bool>
+      </property>
+      <property name="format">
+       <string>%v/%m Fichier déplacer</string>
+      </property>
+     </widget>
     </item>
     <item>
      <spacer name="verticalSpacer">

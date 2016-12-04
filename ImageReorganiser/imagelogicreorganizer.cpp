@@ -1,4 +1,4 @@
-#include "imagelogicreorganizerThread.h"
+#include "imagelogicreorganizer.h"
 
 void ImageLogicReorganizerThread::FindAllFile()
 {
@@ -25,8 +25,14 @@ ImageLogicReorganizerThread::ImageLogicReorganizerThread(QString Directory)
   FindAllFile();
 }
 
+unsigned int ImageLogicReorganizerThread::GetNumberOfFile()
+{
+  return ImageListPath.count();
+}
+
 void ImageLogicReorganizerThread::run()
 {
+  int count = 0;
   foreach (QFileInfo fileInfo, ImageListPath)
   {
     QImage image = QImage(fileInfo.absoluteFilePath());
@@ -36,6 +42,8 @@ void ImageLogicReorganizerThread::run()
                             +"/"+fileInfo.fileName());
     Directory.mkdir(Destination.absolutePath());
     QFile::rename(fileInfo.filePath(),Destination.absoluteFilePath());
+    ++count;
+    emit ProgressSignal(count);
   }
 }
 

@@ -13,8 +13,12 @@ private:
   QList<QFileInfo> ImageListPath;
 
   void FindAllFile();
+signals:
+  //send number of file completed
+  void ProgressSignal(int Progress);
 public:
   ImageLogicReorganizerThread(QString Directory);
+  unsigned int GetNumberOfFile();
   void run();
 };
 

@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QCloseEvent>
-#include "imagelogicreorganizerThread.h"
+#include "imagelogicreorganizer.h"
 
 namespace Ui {
   class MainWindow;
@@ -24,7 +24,7 @@ private slots:
 
 private:
   Ui::MainWindow *ui;
-  ImageLogicReorganizerThread* imageLogicThread;
+  QPointer<ImageLogicReorganizerThread> imageLogicThread;
   void closeEvent(QCloseEvent * event);
 };
 

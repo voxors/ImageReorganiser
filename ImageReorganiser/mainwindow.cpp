@@ -34,14 +34,18 @@ void MainWindow::on_pushButtonDirectory_clicked()
 
 void MainWindow::on_pushButtonExec_clicked()
 {
-  ui->pushButtonExec->setEnabled(false);
   QDir ImageFolder(ui->lineEditDirectory->text());
   if (ImageFolder.exists())
   {
+    ui->progressBarMain->reset();
+    ui->pushButtonExec->setEnabled(false);
+    ui->progressBarMain->setTextVisible(true);
     imageLogicThread = new ImageLogicReorganizerThread(ui->lineEditDirectory->text());
-    imageLogicThread->start();
+    ui->progressBarMain->setMaximum(imageLogicThread->GetNumberOfFile());
+    connect(imageLogicThread, SIGNAL(ProgressSignal(int)), ui->progressBarMain, SLOT(setValue(int)));
     connect(imageLogicThread, SIGNAL(finished()), imageLogicThread, SLOT(deleteLater()));
     connect(imageLogicThread, SIGNAL(finished()), this, SLOT(on_executeFinished()));
+    imageLogicThread->start();
   }
 }
 
@@ -52,7 +56,7 @@ void MainWindow::on_executeFinished()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-  if (imageLogicThread != nullptr)
+  if (!imageLogicThread.isNull())
   {
     if (!imageLogicThread->isFinished())
     {
