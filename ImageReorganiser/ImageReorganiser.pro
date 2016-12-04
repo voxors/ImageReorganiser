@@ -14,9 +14,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    imagelogicreorganizer.cpp
+    imagelogicreorganizerThread.cpp
 
 HEADERS  += mainwindow.h \
-    imagelogicreorganizer.h
+    imagelogicreorganizerThread.h
 
 FORMS    += mainwindow.ui

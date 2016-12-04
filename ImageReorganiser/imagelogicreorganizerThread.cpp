@@ -1,6 +1,6 @@
-#include "imagelogicreorganizer.h"
+#include "imagelogicreorganizerThread.h"
 
-void ImageLogicReorganizer::FindAllFile()
+void ImageLogicReorganizerThread::FindAllFile()
 {
   QList<QByteArray> FormatListByte = QImageReader::supportedImageFormats();
 
@@ -18,14 +18,14 @@ void ImageLogicReorganizer::FindAllFile()
   }
 }
 
-ImageLogicReorganizer::ImageLogicReorganizer(QString Directory)
+ImageLogicReorganizerThread::ImageLogicReorganizerThread(QString Directory)
 {
   this->Directory.setPath(Directory);
   this->Directory.setFilter(QDir::Files);
   FindAllFile();
 }
 
-void ImageLogicReorganizer::Reorganise()
+void ImageLogicReorganizerThread::run()
 {
   foreach (QFileInfo fileInfo, ImageListPath)
   {

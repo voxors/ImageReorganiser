@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QCloseEvent>
+#include "imagelogicreorganizerThread.h"
 
 namespace Ui {
   class MainWindow;
@@ -17,11 +19,13 @@ public:
 
 private slots:
   void on_pushButtonDirectory_clicked();
-
-  void on_pushButton_clicked();
+  void on_pushButtonExec_clicked();
+  void on_executeFinished();
 
 private:
   Ui::MainWindow *ui;
+  ImageLogicReorganizerThread* imageLogicThread;
+  void closeEvent(QCloseEvent * event);
 };
 
 #endif // MAINWINDOW_H

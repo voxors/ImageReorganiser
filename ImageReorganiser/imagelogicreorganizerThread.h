@@ -4,16 +4,18 @@
 #include <QtCore>
 #include <QImageReader>
 
-class ImageLogicReorganizer
+class ImageLogicReorganizerThread : public QThread
 {
+  Q_OBJECT
+
 private:
   QDir Directory;
   QList<QFileInfo> ImageListPath;
 
   void FindAllFile();
 public:
-  ImageLogicReorganizer(QString Directory);
-  void Reorganise();
+  ImageLogicReorganizerThread(QString Directory);
+  void run();
 };
 
 #endif // IMAGELOGICREORGANIZER_H

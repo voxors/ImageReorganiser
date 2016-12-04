@@ -68,9 +68,12 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButtonExec">
         <property name="text">
          <string>Exécuter</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
