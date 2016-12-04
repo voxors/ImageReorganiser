@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+  this->setMaximumHeight(this->height());
+  this->setMinimumHeight(this->height());
   imageLogicThread = nullptr;
   LoadParams();
 }
