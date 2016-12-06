@@ -22,13 +22,19 @@ private slots:
   void on_pushButtonExec_clicked();
   void on_executeFinished();
 
+  void on_lineEditFormat_textChanged(const QString &arg1);
+
+  void on_pushButtonHelpFormat_clicked();
+
 private:
+  QHash<QString,QString> ConvertFormat;
   const QString ParamsFilePath = QString("./Params.txt");
   Ui::MainWindow *ui;
   QPointer<ImageLogicReorganizerThread> imageLogicThread;
   void closeEvent(QCloseEvent * event);
   void SaveParams();
   void LoadParams();
+  void LoadConvertTable();
 };
 
 #endif // MAINWINDOW_H

@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
   this->setMinimumHeight(this->height());
   imageLogicThread = nullptr;
   LoadParams();
+  LoadConvertTable();
 }
 
 MainWindow::~MainWindow()
@@ -43,7 +44,9 @@ void MainWindow::on_pushButtonExec_clicked()
     ui->progressBarMain->reset();
     ui->pushButtonExec->setEnabled(false);
     ui->progressBarMain->setTextVisible(true);
-    imageLogicThread = new ImageLogicReorganizerThread(ui->lineEditDirectory->text());
+    imageLogicThread = new ImageLogicReorganizerThread(ui->lineEditDirectory->text(),
+                                                       ui->lineEditFormat->text(),
+                                                       ConvertFormat);
     ui->progressBarMain->setMaximum(imageLogicThread->GetNumberOfFile());
     connect(imageLogicThread, SIGNAL(ProgressSignal(int)), ui->progressBarMain, SLOT(setValue(int)));
     connect(imageLogicThread, SIGNAL(finished()), imageLogicThread, SLOT(deleteLater()));
@@ -86,6 +89,7 @@ void MainWindow::SaveParams()
   {
     QTextStream out(&ParamsFile);
     out << "Directory=" << ui->lineEditDirectory->text() << endl;
+    out << "Format=" << ui->lineEditFormat->text() << endl;
   }
 }
 
@@ -106,10 +110,40 @@ void MainWindow::LoadParams()
       {
         ui->lineEditDirectory->setText(Value);
       }
+      else if (Variable == "Format")
+      {
+        //FIXME Make format preview correctly on load
+        ui->lineEditFormat->setText(Value);
+      }
       else
       {
         qWarning() << Variable + " is not a defined save parameters";
       }
     }
   }
+}
+void MainWindow::LoadConvertTable()
+{
+  //TODO Add more Conversion
+  ConvertFormat.insert("%w",tr("Largeur"));
+  ConvertFormat.insert("%h",tr("Hauteur"));
+}
+
+void MainWindow::on_lineEditFormat_textChanged(const QString &arg1)
+{
+  QString PreviewString = arg1;
+
+  QHashIterator<QString,QString> i(ConvertFormat);
+  while (i.hasNext())
+  {
+    i.next();
+    PreviewString = PreviewString.replace(i.key(),"{"+i.value()+"}");
+  }
+
+  ui->lineEditPreview->setText(PreviewString);
+}
+
+void MainWindow::on_pushButtonHelpFormat_clicked()
+{
+  //TODO Add help Menu
 }

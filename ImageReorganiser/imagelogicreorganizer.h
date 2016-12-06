@@ -11,13 +11,16 @@ class ImageLogicReorganizerThread : public QThread
 private:
   QDir Directory;
   QList<QFileInfo> ImageListPath;
+  QString Format;
+  QHash<QString,QString> ConvertFormat;
 
   void FindAllFile();
+  QString CreateDestPath(QFileInfo fileInfo);
 signals:
   //send number of file completed
   void ProgressSignal(int Progress);
 public:
-  ImageLogicReorganizerThread(QString Directory);
+  ImageLogicReorganizerThread(QString Directory,QString Format,QHash<QString,QString> HashTable);
   unsigned int GetNumberOfFile();
   void run();
 };

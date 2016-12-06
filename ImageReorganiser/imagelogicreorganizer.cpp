@@ -18,10 +18,14 @@ void ImageLogicReorganizerThread::FindAllFile()
   }
 }
 
-ImageLogicReorganizerThread::ImageLogicReorganizerThread(QString Directory)
+ImageLogicReorganizerThread::ImageLogicReorganizerThread(QString Directory,
+                                                         QString Format,
+                                                         QHash<QString, QString> HashTable)
 {
   this->Directory.setPath(Directory);
   this->Directory.setFilter(QDir::Files);
+  this->Format = Format;
+  this->ConvertFormat = HashTable;
   FindAllFile();
 }
 
@@ -32,18 +36,41 @@ unsigned int ImageLogicReorganizerThread::GetNumberOfFile()
 
 void ImageLogicReorganizerThread::run()
 {
+  //TODO Multi-Threading
   int count = 0;
   foreach (QFileInfo fileInfo, ImageListPath)
   {
-    QImage image = QImage(fileInfo.absoluteFilePath());
-
-    QFileInfo Destination = QFileInfo(Directory.absolutePath()
-                            +"/"+QString::number(image.width()) + "x" + QString::number(image.height())
-                            +"/"+fileInfo.fileName());
+    QFileInfo Destination = CreateDestPath(fileInfo);
     Directory.mkdir(Destination.absolutePath());
     QFile::rename(fileInfo.filePath(),Destination.absoluteFilePath());
     ++count;
     emit ProgressSignal(count);
   }
+}
+
+QString ImageLogicReorganizerThread::CreateDestPath(QFileInfo fileInfo)
+{
+  QImage image = QImage(fileInfo.absoluteFilePath());
+
+  QString ConvertedFormat = Format;
+  QHashIterator<QString,QString> i(ConvertFormat);
+  while (i.hasNext())
+  {
+    i.next();
+    if (i.key() == "%w")
+    {
+      ConvertedFormat = ConvertedFormat.replace("%w",QString::number(image.width()));
+    }
+    else if (i.key() == "%h")
+    {
+      ConvertedFormat = ConvertedFormat.replace("%h",QString::number(image.height()));
+    }
+    else
+    {
+      qWarning() << i.key() + " Should be converted but no conversion found";
+    }
+  }
+
+  return Directory.absolutePath() + "/" + ConvertedFormat + "/" + fileInfo.fileName();
 }
 

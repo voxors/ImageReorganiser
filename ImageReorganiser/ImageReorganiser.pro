@@ -14,9 +14,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    imagelogicreorganizer.cpp
+    imagelogicreorganizer.cpp \
+    help.cpp
 
 HEADERS  += mainwindow.h \
-    imagelogicreorganizer.h
+    imagelogicreorganizer.h \
+    help.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    help.ui
+
+win32 {
+        RC_ICONS = icon.ico
+}
+
+DISTFILES +=
