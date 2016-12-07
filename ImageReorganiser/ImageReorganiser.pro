@@ -14,15 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    imagelogicreorganizer.cpp \
-    help.cpp
+    imagelogicreorganizer.cpp
 
 HEADERS  += mainwindow.h \
-    imagelogicreorganizer.h \
-    help.h
+    imagelogicreorganizer.h
 
-FORMS    += mainwindow.ui \
-    help.ui
+FORMS    += mainwindow.ui
 
 win32 {
         RC_ICONS = icon.ico

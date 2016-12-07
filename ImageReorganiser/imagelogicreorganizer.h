@@ -16,6 +16,7 @@ private:
 
   void FindAllFile();
   QString CreateDestPath(QFileInfo fileInfo);
+  unsigned int gcd(unsigned int n1, unsigned int n2);
 signals:
   //send number of file completed
   void ProgressSignal(int Progress);

@@ -11,9 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   this->setMaximumHeight(this->height());
   this->setMinimumHeight(this->height());
+  LoadConvertTable();
   imageLogicThread = nullptr;
   LoadParams();
-  LoadConvertTable();
 }
 
 MainWindow::~MainWindow()
@@ -112,7 +112,6 @@ void MainWindow::LoadParams()
       }
       else if (Variable == "Format")
       {
-        //FIXME Make format preview correctly on load
         ui->lineEditFormat->setText(Value);
       }
       else
@@ -124,9 +123,22 @@ void MainWindow::LoadParams()
 }
 void MainWindow::LoadConvertTable()
 {
-  //TODO Add more Conversion
   ConvertFormat.insert("%w",tr("Largeur"));
   ConvertFormat.insert("%h",tr("Hauteur"));
+  ConvertFormat.insert("%M",tr("Mode Paysage/Portrait"));
+  ConvertFormat.insert("%r",tr("Ratio"));
+
+  PopulateComboBox();
+}
+
+void MainWindow::PopulateComboBox()
+{
+  QHashIterator<QString,QString> i(ConvertFormat);
+  while (i.hasNext())
+  {
+    i.next();
+    ui->comboBoxFormat->addItem(i.value(),i.key());
+  }
 }
 
 void MainWindow::on_lineEditFormat_textChanged(const QString &arg1)
@@ -143,7 +155,7 @@ void MainWindow::on_lineEditFormat_textChanged(const QString &arg1)
   ui->lineEditPreview->setText(PreviewString);
 }
 
-void MainWindow::on_pushButtonHelpFormat_clicked()
+void MainWindow::on_pushButtonFormat_clicked()
 {
-  //TODO Add help Menu
+  ui->lineEditFormat->setText(ui->lineEditFormat->text().append(ui->comboBoxFormat->currentData().toString()));
 }

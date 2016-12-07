@@ -24,7 +24,7 @@ private slots:
 
   void on_lineEditFormat_textChanged(const QString &arg1);
 
-  void on_pushButtonHelpFormat_clicked();
+  void on_pushButtonFormat_clicked();
 
 private:
   QHash<QString,QString> ConvertFormat;
@@ -35,6 +35,7 @@ private:
   void SaveParams();
   void LoadParams();
   void LoadConvertTable();
+  void PopulateComboBox();
 };
 
 #endif // MAINWINDOW_H
