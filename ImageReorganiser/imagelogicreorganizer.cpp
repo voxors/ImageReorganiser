@@ -106,14 +106,17 @@ QString ImageLogicReorganizerThread::CreateDestPath(QFileInfo fileInfo)
     }
   }
 
-  QString FinalDestination = Directory.absolutePath() + "/" + ConvertedFormat + "/" + fileInfo.fileName();
+  QFileInfo FinalDestination = Directory.absolutePath() + "/" + ConvertedFormat + "/" + fileInfo.fileName();
 
-  if (QFileInfo(FinalDestination).exists())
+  while (FinalDestination.exists())
   {
-    FinalDestination = Directory.absolutePath() + "/" + ConvertedFormat + "/" + fileInfo.baseName().append("_more") + "." + fileInfo.completeSuffix();
+    FinalDestination = Directory.absolutePath() +
+        "/" + ConvertedFormat +
+        "/" + FinalDestination.baseName().append("_more") +
+        "." + FinalDestination.completeSuffix();
   }
 
-  return FinalDestination;
+  return FinalDestination.absoluteFilePath();
 }
 
 unsigned int ImageLogicReorganizerThread::gcd (unsigned int n1, unsigned int n2) {
