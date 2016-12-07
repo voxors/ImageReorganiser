@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QCloseEvent>
-#include "imagelogicreorganizerThread.h"
+#include "imagelogicreorganizer.h"
 
 namespace Ui {
   class MainWindow;
@@ -22,10 +22,20 @@ private slots:
   void on_pushButtonExec_clicked();
   void on_executeFinished();
 
+  void on_lineEditFormat_textChanged(const QString &arg1);
+
+  void on_pushButtonFormat_clicked();
+
 private:
+  QHash<QString,QString> ConvertFormat;
+  const QString ParamsFilePath = QString("./Params.txt");
   Ui::MainWindow *ui;
-  ImageLogicReorganizerThread* imageLogicThread;
+  QPointer<ImageLogicReorganizerThread> imageLogicThread;
   void closeEvent(QCloseEvent * event);
+  void SaveParams();
+  void LoadParams();
+  void LoadConvertTable();
+  void PopulateComboBox();
 };
 
 #endif // MAINWINDOW_H

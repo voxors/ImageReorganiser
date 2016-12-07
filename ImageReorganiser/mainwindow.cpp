@@ -9,7 +9,11 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+  this->setMaximumHeight(this->height());
+  this->setMinimumHeight(this->height());
+  LoadConvertTable();
   imageLogicThread = nullptr;
+  LoadParams();
 }
 
 MainWindow::~MainWindow()
@@ -34,14 +38,20 @@ void MainWindow::on_pushButtonDirectory_clicked()
 
 void MainWindow::on_pushButtonExec_clicked()
 {
-  ui->pushButtonExec->setEnabled(false);
   QDir ImageFolder(ui->lineEditDirectory->text());
   if (ImageFolder.exists())
   {
-    imageLogicThread = new ImageLogicReorganizerThread(ui->lineEditDirectory->text());
-    imageLogicThread->start();
+    ui->progressBarMain->reset();
+    ui->pushButtonExec->setEnabled(false);
+    ui->progressBarMain->setTextVisible(true);
+    imageLogicThread = new ImageLogicReorganizerThread(ui->lineEditDirectory->text(),
+                                                       ui->lineEditFormat->text(),
+                                                       ConvertFormat);
+    ui->progressBarMain->setMaximum(imageLogicThread->GetNumberOfFile());
+    connect(imageLogicThread, SIGNAL(ProgressSignal(int)), ui->progressBarMain, SLOT(setValue(int)));
     connect(imageLogicThread, SIGNAL(finished()), imageLogicThread, SLOT(deleteLater()));
     connect(imageLogicThread, SIGNAL(finished()), this, SLOT(on_executeFinished()));
+    imageLogicThread->start();
   }
 }
 
@@ -52,7 +62,7 @@ void MainWindow::on_executeFinished()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-  if (imageLogicThread != nullptr)
+  if (!imageLogicThread.isNull())
   {
     if (!imageLogicThread->isFinished())
     {
@@ -68,4 +78,84 @@ void MainWindow::closeEvent(QCloseEvent* event)
       }
     }
   }
+  SaveParams();
+}
+
+void MainWindow::SaveParams()
+{
+  QFile ParamsFile(ParamsFilePath);
+
+  if (ParamsFile.open(QFile::WriteOnly|QFile::Truncate))
+  {
+    QTextStream out(&ParamsFile);
+    out << "Directory=" << ui->lineEditDirectory->text() << endl;
+    out << "Format=" << ui->lineEditFormat->text() << endl;
+  }
+}
+
+void MainWindow::LoadParams()
+{
+  QFile ParamsFile(ParamsFilePath);
+
+  if (ParamsFile.open(QFile::ReadOnly))
+  {
+    QTextStream in(&ParamsFile);
+    while (!in.atEnd())
+    {
+      QString line = in.readLine();
+      int splitPosition = line.indexOf("=");
+      QString Variable = line.left(splitPosition);
+      QString Value = line.right(line.length() - splitPosition - 1);
+      if (Variable == "Directory")
+      {
+        ui->lineEditDirectory->setText(Value);
+      }
+      else if (Variable == "Format")
+      {
+        ui->lineEditFormat->setText(Value);
+      }
+      else
+      {
+        qWarning() << Variable + " is not a defined save parameters";
+      }
+    }
+  }
+}
+void MainWindow::LoadConvertTable()
+{
+  ConvertFormat.insert("%w",tr("Largeur"));
+  ConvertFormat.insert("%h",tr("Hauteur"));
+  ConvertFormat.insert("%M",tr("Mode Paysage/Portrait"));
+  ConvertFormat.insert("%r",tr("Ratio"));
+
+  PopulateComboBox();
+}
+
+void MainWindow::PopulateComboBox()
+{
+  QHashIterator<QString,QString> i(ConvertFormat);
+  while (i.hasNext())
+  {
+    i.next();
+    ui->comboBoxFormat->addItem(i.value(),i.key());
+  }
+}
+
+void MainWindow::on_lineEditFormat_textChanged(const QString &arg1)
+{
+  QString PreviewString = arg1;
+
+  QHashIterator<QString,QString> i(ConvertFormat);
+  while (i.hasNext())
+  {
+    i.next();
+    PreviewString = PreviewString.replace(i.key(),"{"+i.value()+"}");
+  }
+
+  ui->lineEditPreview->setText(PreviewString);
+}
+
+void MainWindow::on_pushButtonFormat_clicked()
+{
+  ui->lineEditFormat->setText(ui->lineEditFormat->text().append(ui->comboBoxFormat->currentData().toString()));
 }
