@@ -38,22 +38,30 @@ unsigned int ImageLogicReorganizerThread::GetNumberOfFile()
 void ImageLogicReorganizerThread::run()
 {
   //TODO Multi-Threading
-  int count = 0;
+  unsigned int count = 0;
   foreach (QFileInfo fileInfo, ImageListPath)
   {
-    QFileInfo Destination = CreateDestPath(fileInfo);
-    Directory.mkpath(Destination.absolutePath());
-    if (!QFile::rename(fileInfo.filePath(),Destination.absoluteFilePath()))
-    {
-      qWarning() << "move failed with error : " << QFile::AbortError << endl;
-    }
+    CopyFileImage(fileInfo);
     ++count;
     emit ProgressSignal(count);
   }
 }
 
-QString ImageLogicReorganizerThread::CreateDestPath(QFileInfo fileInfo)
+void ImageLogicReorganizerThread::CopyFileImage(QFileInfo fileInfo)
 {
+  QFileInfo Destination = CreateDestPath(fileInfo);
+  if (Destination.absolutePath() != fileInfo.absolutePath())
+  {
+    Directory.mkpath(Destination.absolutePath());
+    if (!QFile::rename(fileInfo.filePath(),Destination.absoluteFilePath()))
+    {
+      qWarning() << "move failed with error : " << QFile::AbortError << endl;
+    }
+  }
+}
+
+QString ImageLogicReorganizerThread::CreateDestPath(QFileInfo fileInfo)
+{ 
   QImage image = QImage(fileInfo.absoluteFilePath());
 
   QString ConvertedFormat = Format;
@@ -108,12 +116,17 @@ QString ImageLogicReorganizerThread::CreateDestPath(QFileInfo fileInfo)
 
   QFileInfo FinalDestination = Directory.absolutePath() + "/" + ConvertedFormat + "/" + fileInfo.fileName();
 
-  while (FinalDestination.exists())
+  if (fileInfo.absolutePath() != FinalDestination.absolutePath())
   {
-    FinalDestination = Directory.absolutePath() +
-        "/" + ConvertedFormat +
-        "/" + FinalDestination.baseName().append("_more") +
-        "." + FinalDestination.completeSuffix();
+    int count = 1;
+    while (FinalDestination.exists())
+    {
+      FinalDestination = Directory.absolutePath() +
+          "/" + ConvertedFormat +
+          "/" + fileInfo.baseName().append(" ("+QString::number(count)+")") +
+          "." + FinalDestination.completeSuffix();
+      ++count;
+    }
   }
 
   return FinalDestination.absoluteFilePath();
